@@ -1,5 +1,5 @@
-export interface CatFact {
-  fact: string;
-  length: number;
+export interface CatFactModel {
+  readonly fact: string;
+  readonly length: number;
 }
 

@@ -1,7 +1,9 @@
 <div class="container-fluid d-flex justify-content-center align-items-center vh-100 bg-light">
-  <div class="card rounded border bg-white shadow-sm" *ngIf="catFact" style="max-width: 600px; width: 90%;">
-    <div class="card-body p-4">
-      <p class="card-text text-dark fs-5 mb-0">{{ catFact.fact }}</p>
+  @if (catFact(); as catFact) {
+    <div class="card rounded border bg-white shadow-sm" style="max-width: 600px; width: 90%;">
+      <div class="card-body p-4">
+        <p class="card-text text-dark fs-5 mb-0">{{ catFact.fact }}</p>
+      </div>
     </div>
-  </div>
+  }
 </div>
