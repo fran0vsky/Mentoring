@@ -1,6 +1,7 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, inject, Signal, ViewEncapsulation } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CatFactService } from './cat-fact.service';
+import { CatModel } from './cat.model';
 import { CatService } from './cat.service';
 
 @Component({
@@ -15,6 +16,6 @@ export class AppComponent {
   private readonly catFactService = inject(CatFactService);
   private readonly catService = inject(CatService);
   
-  catFact = toSignal(this.catFactService.getOne(), { initialValue: null });
-  cats = toSignal(this.catService.getAll(), { initialValue: null });
+  protected catFact = toSignal(this.catFactService.getOne(), { initialValue: null });
+  protected cats: Signal<CatModel[] | null> = toSignal(this.catService.getAll(), { initialValue: null });
 }
