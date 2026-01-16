@@ -1,6 +1,7 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CatFactService } from './cat-fact.service';
+import { CatService } from './cat.service';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,8 @@ import { CatFactService } from './cat-fact.service';
 })
 export class AppComponent {
   private readonly catFactService = inject(CatFactService);
+  private readonly catService = inject(CatService);
   
   catFact = toSignal(this.catFactService.getOne(), { initialValue: null });
+  cats = toSignal(this.catService.getAll(), { initialValue: null });
 }
