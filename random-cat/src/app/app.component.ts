@@ -19,3 +19,4 @@ export class AppComponent {
   protected catFact = toSignal(this.catFactService.getOne(), { initialValue: null });
   protected cats: Signal<CatModel[] | null> = toSignal(this.catService.getAll(), { initialValue: null });
 }
+}

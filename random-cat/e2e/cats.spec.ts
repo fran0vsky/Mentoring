@@ -1,13 +1,40 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
-test('displays list of cats on main page', async ({ page }) => {
+const cats =  [
+    {
+      "id": 1,
+      "name": "Whiskers",
+      "age": 2,
+      "breed": "Siamese"
+    },
+    {
+      "id": 2,
+      "name": "Max",
+      "age": 3,
+      "breed": "Labrador - i would argue, if that's a cat breed"
+    },
+    {
+      "id": 3,
+      "name": "Bella",
+      "age": 4,
+      "breed": "Persian"
+    }
+  ];
 
+test('should check if the page has cats', async ({ page }) => {
+
+  // Given I am on the main page
+  await page.route('/cats.json', (route) => {
+    return route.fulfill({
+      status: 200,
+      body: JSON.stringify({ data: cats })
+    });
+  });
   await page.goto('/');
 
-  await page.waitForSelector('text=Cats List');
+  // When the list is loaded
+  const catItems = page.locator('[role="list"][aria-label="List of cats"] [role="listitem"]');
 
-  const catItems = page.locator('.list-group-item');
-  await expect(catItems).toHaveCount(3);
-
-  await page.screenshot({ path: 'e2e/cats-loaded.png' });
+  // Then there should be as many cats as in the data
+  await expect(catItems).toHaveCount(cats.length);
 });
