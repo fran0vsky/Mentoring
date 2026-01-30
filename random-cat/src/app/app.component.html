@@ -7,22 +7,38 @@
     </div>
   }
   
-  @if (cats(); as catsData) {
+  @if (cats() === null) {
+    <div class="d-flex justify-content-center align-items-center">
+      <div class="spinner-border text-primary" role="status" data-testid="loading-spinner">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+  
+  @if (cats() && cats()!.length === 0) {
     <div class="card rounded border bg-white shadow-sm" style="max-width: 600px; width: 90%;">
+      <div class="card-body p-4 text-center">
+        <p class="card-text text-dark fs-5 mb-0">Sorry no cats today</p>
+      </div>
+    </div>
+  }
+  
+  @if (cats() && cats()!.length > 0 ? cats() : null; as catsData) {
+    <section class="card rounded border bg-white shadow-sm" style="max-width: 600px; width: 90%;" aria-labelledby="cats-list-heading">
       <div class="card-body p-4">
-        <h5 class="card-title mb-3 text-dark">Cats List</h5>
-        <ul class="list-group list-group-flush">
+        <h2 id="cats-list-heading" class="card-title mb-3 text-dark h5">Cats List</h2>
+        <ul class="list-group list-group-flush" role="list" aria-label="List of cats">
           @for (cat of catsData; track cat.id) {
-            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0" role="listitem">
               <div>
                 <span class="fw-bold text-dark">{{ cat.name }}</span>
-                <span class="text-muted ms-2">{{ cat.breed }}</span>
+                <span class="text-muted ms-2" [attr.aria-label]="'Breed: ' + cat.breed">{{ cat.breed }}</span>
               </div>
-              <span class="badge bg-primary rounded-pill">{{ cat.age }} years</span>
+              <span class="badge bg-primary rounded-pill" [attr.aria-label]="'Age: ' + cat.age + ' years'">{{ cat.age }} years</span>
             </li>
           }
         </ul>
       </div>
-    </div>
+    </section>
   }
 </div>
