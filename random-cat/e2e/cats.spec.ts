@@ -38,3 +38,45 @@ test('should check if the page has cats', async ({ page }) => {
   // Then there should be as many cats as in the data
   await expect(catItems).toHaveCount(cats.length);
 });
+
+test('should show spinner while loading cats', async ({ page }) => {
+  await page.route('/cats.json', async (route) => {
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    return route.fulfill({
+      status: 200,
+      body: JSON.stringify({ data: cats })
+    });
+  });
+  
+  await page.goto('/');
+  
+  const spinner = page.locator('[data-testid="loading-spinner"]');
+  await expect(spinner).toBeVisible();
+  
+  const catList = page.locator('[role="list"][aria-label="List of cats"]');
+  await expect(catList).not.toBeVisible();
+  
+  await page.waitForResponse('/cats.json');
+  
+  await expect(spinner).not.toBeVisible();
+  await expect(catList).toBeVisible();
+  
+  const catItems = page.locator('[role="list"][aria-label="List of cats"] [role="listitem"]');
+  await expect(catItems).toHaveCount(cats.length);
+});
+
+test('should show empty state when no cats', async ({ page }) => {
+  await page.route('/cats.json', (route) => {
+    return route.fulfill({
+      status: 200,
+      body: JSON.stringify({ data: [] })
+    });
+  });
+  
+  await page.goto('/');
+  
+  await page.waitForResponse('/cats.json');
+  
+  const emptyState = page.locator('text=Sorry no cats today');
+  await expect(emptyState).toBeVisible();
+});
