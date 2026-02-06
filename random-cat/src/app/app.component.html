@@ -1,6 +1,6 @@
 <div class="container-fluid d-flex flex-column justify-content-center align-items-center vh-100 bg-light py-5">
   @if (catFact(); as catFact) {
-    <div class="card rounded border bg-white shadow-sm mb-4" style="max-width: 600px; width: 90%;">
+    <div class="card rounded border bg-white shadow-sm mb-4 card-max">
       <div class="card-body p-4">
         <p class="card-text text-dark fs-5 mb-0">{{ catFact.fact }}</p>
       </div>
@@ -16,7 +16,7 @@
   }
   
   @if (cats() && cats()!.length === 0) {
-    <div class="card rounded border bg-white shadow-sm" style="max-width: 600px; width: 90%;">
+    <div class="card rounded border bg-white shadow-sm card-max">
       <div class="card-body p-4 text-center">
         <p class="card-text text-dark fs-5 mb-0">Sorry no cats today</p>
       </div>
@@ -24,7 +24,7 @@
   }
   
   @if (cats() && cats()!.length > 0 ? cats() : null; as catsData) {
-    <section class="card rounded border bg-white shadow-sm" style="max-width: 600px; width: 90%;" aria-labelledby="cats-list-heading">
+    <section class="card rounded border bg-white shadow-sm card-max" aria-labelledby="cats-list-heading">
       <div class="card-body p-4">
         <h2 id="cats-list-heading" class="card-title mb-3 text-dark h5">Cats List</h2>
         <ul class="list-group list-group-flush" role="list" aria-label="List of cats">
