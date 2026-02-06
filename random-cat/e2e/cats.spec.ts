@@ -21,8 +21,13 @@ const cats = [
   },
 ];
 
-const stubCatsResponse = async (page: Page, cats: any[]) => {
-  await page.route('/cats.json', (route) => {
+const API_CATS_URL = 'http://localhost:3000/api/cats';
+
+const stubCatsResponse = async (page: Page, cats: any[], delayMs = 0) => {
+  await page.route(API_CATS_URL, async (route) => {
+    if (delayMs > 0) {
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
     return route.fulfill({
       status: 200,
       body: JSON.stringify({ data: cats }),
@@ -47,7 +52,7 @@ test('should check if the page has cats', async ({ page }) => {
 });
 
 test('should show spinner while loading cats', async ({ page }) => {
-  await stubCatsResponse(page, cats);
+  await stubCatsResponse(page, cats, 2000);
 
   await page.goto('/');
 
