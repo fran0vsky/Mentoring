@@ -1,4 +1,10 @@
-import { Controller, Get } from "@nestjs/common";
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+} from "@nestjs/common";
 import { CatsService } from "./cats.service";
 
 @Controller("api/cats")
@@ -16,5 +22,10 @@ export class CatsController {
     const random =
       rows.length > 0 ? rows[Math.floor(Math.random() * rows.length)] : null;
     return random;
+  }
+
+  @Delete(":id")
+  remove(@Param("id", ParseIntPipe) id: number) {
+    return this.catsService.removeOne(id);
   }
 }

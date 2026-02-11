@@ -75,3 +75,69 @@ test('should show empty state when no cats', async ({ page }) => {
   const emptyState = page.locator('text=Sorry no cats today');
   await expect(emptyState).toBeVisible();
 });
+
+test('should remove cat when x button is pressed at first row', async ({
+  page,
+}) => {
+  let getCallCount = 0;
+  await page.route(API_CATS_URL, async (route) => {
+    if (route.request().method() !== 'GET') return route.continue();
+    getCallCount++;
+    const data = getCallCount === 1 ? cats : cats.slice(1);
+    return route.fulfill({
+      status: 200,
+      body: JSON.stringify({ data }),
+    });
+  });
+  await page.route(/http:\/\/localhost:3000\/api\/cats\/\d+/, async (route) => {
+    if (route.request().method() === 'DELETE') {
+      return route.fulfill({ status: 200 });
+    }
+    return route.continue();
+  });
+
+  await page.goto('/');
+
+  const catItems = page.locator(
+    '[role="list"][aria-label="List of cats"] [role="listitem"]',
+  );
+  await expect(catItems).toHaveCount(3);
+
+  const firstRowRemoveBtn = page
+    .locator('[role="list"][aria-label="List of cats"] [role="listitem"]')
+    .first()
+    .locator('[data-testid="remove-cat-btn"]');
+  await firstRowRemoveBtn.click();
+
+  const modal = page.locator('[data-testid="remove-cat-modal"]');
+  await expect(modal).toBeVisible();
+  await page.locator('[data-testid="remove-cat-confirm"]').click();
+
+  await expect(catItems).toHaveCount(2);
+});
+
+test('should close modal and keep cat when cancel is pressed', async ({
+  page,
+}) => {
+  await stubCatsResponse(page, cats);
+
+  await page.goto('/');
+
+  const catItems = page.locator(
+    '[role="list"][aria-label="List of cats"] [role="listitem"]',
+  );
+  await expect(catItems).toHaveCount(3);
+
+  const firstRowRemoveBtn = page
+    .locator('[role="list"][aria-label="List of cats"] [role="listitem"]')
+    .first()
+    .locator('[data-testid="remove-cat-btn"]');
+  await firstRowRemoveBtn.click();
+
+  const modal = page.locator('[data-testid="remove-cat-modal"]');
+  await expect(modal).toBeVisible();
+  await page.locator('[data-testid="remove-cat-cancel"]').click();
+
+  await expect(modal).not.toBeVisible();
+  await expect(catItems).toHaveCount(3);
+});

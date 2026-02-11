@@ -34,11 +34,41 @@
                 <span class="fw-bold text-dark">{{ cat.name }}</span>
                 <span class="text-muted ms-2" [attr.aria-label]="'Breed: ' + cat.breed">{{ cat.breed }}</span>
               </div>
-              <span class="badge bg-primary rounded-pill" [attr.aria-label]="'Age: ' + cat.age + ' years'">{{ cat.age }} years</span>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary rounded-pill" [attr.aria-label]="'Age: ' + cat.age + ' years'">{{ cat.age }} years</span>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm"
+                  [attr.aria-label]="'Remove ' + cat.name"
+                  data-testid="remove-cat-btn"
+                  (click)="openRemoveConfirm(cat)"
+                >
+                  x
+                </button>
+              </div>
             </li>
           }
         </ul>
       </div>
     </section>
+  }
+
+  @if (catToRemove(); as cat) {
+    <div class="modal d-block bg-dark bg-opacity-50" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="remove-modal-title" data-testid="remove-cat-modal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 id="remove-modal-title" class="modal-title">Remove cat</h5>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">Are you sure you want to remove {{ cat.name }}?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-testid="remove-cat-cancel" (click)="closeRemoveConfirm()">Cancel</button>
+            <button type="button" class="btn btn-danger" data-testid="remove-cat-confirm" (click)="confirmRemove()">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
   }
 </div>
