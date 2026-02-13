@@ -3,6 +3,7 @@ const { createClient } = require("@supabase/supabase-js");
 
 require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
+// @todo: add faker
 const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_ANON_KEY;
 if (!url || !key) {

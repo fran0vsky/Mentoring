@@ -1,4 +1,10 @@
-import { Component, inject, signal, Signal, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  Signal,
+  ViewEncapsulation,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -12,20 +18,23 @@ import { CatService } from './cat.service';
   imports: [],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent {
   private readonly catFactService = inject(CatFactService);
   private readonly catService = inject(CatService);
 
+  // @todo: Get rid of subject - use only signal
   private readonly refreshCats$ = new BehaviorSubject<void>(undefined);
 
   protected catToRemove = signal<CatModel | null>(null);
 
-  protected catFact = toSignal(this.catFactService.getOne(), { initialValue: null });
+  protected catFact = toSignal(this.catFactService.getOne(), {
+    initialValue: null,
+  });
   protected cats: Signal<CatModel[] | null> = toSignal(
     this.refreshCats$.pipe(switchMap(() => this.catService.getAll())),
-    { initialValue: null }
+    { initialValue: null },
   );
 
   protected openRemoveConfirm(cat: CatModel): void {

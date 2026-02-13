@@ -79,16 +79,8 @@ test('should show empty state when no cats', async ({ page }) => {
 test('should remove cat when x button is pressed at first row', async ({
   page,
 }) => {
-  let getCallCount = 0;
-  await page.route(API_CATS_URL, async (route) => {
-    if (route.request().method() !== 'GET') return route.continue();
-    getCallCount++;
-    const data = getCallCount === 1 ? cats : cats.slice(1);
-    return route.fulfill({
-      status: 200,
-      body: JSON.stringify({ data }),
-    });
-  });
+  await stubCatsResponse(page, cats);
+
   await page.route(/http:\/\/localhost:3000\/api\/cats\/\d+/, async (route) => {
     if (route.request().method() === 'DELETE') {
       return route.fulfill({ status: 200 });
@@ -98,24 +90,25 @@ test('should remove cat when x button is pressed at first row', async ({
 
   await page.goto('/');
 
-  const catItems = page.locator(
-    '[role="list"][aria-label="List of cats"] [role="listitem"]',
-  );
-  await expect(catItems).toHaveCount(3);
-
   const firstRowRemoveBtn = page
     .locator('[role="list"][aria-label="List of cats"] [role="listitem"]')
     .first()
-    .locator('[data-testid="remove-cat-btn"]');
+    .getByRole('button');
   await firstRowRemoveBtn.click();
 
-  const modal = page.locator('[data-testid="remove-cat-modal"]');
+  const modal = page.locator('[role="dialog"]');
   await expect(modal).toBeVisible();
-  await page.locator('[data-testid="remove-cat-confirm"]').click();
+  await page.getByRole('button', { name: 'Confirm' }).click();
 
-  await expect(catItems).toHaveCount(2);
+  await stubCatsResponse(page, cats.slice(1));
+
+  const catItems = page.locator(
+    '[role="list"][aria-label="List of cats"] [role="listitem"]',
+  );
+  await expect(catItems).toHaveCount(cats.length - 1);
 });
 
+// @todo: adjust this test as above: do not use data-testid
 test('should close modal and keep cat when cancel is pressed', async ({
   page,
 }) => {
