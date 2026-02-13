@@ -13,4 +13,8 @@ export class CatService {
       .get<{ data: CatModel[] }>(`${environment.apiUrl}/api/cats`)
       .pipe(map((response) => response.data));
   }
+
+  removeOne(id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/api/cats/${id}`);
+  }
 }

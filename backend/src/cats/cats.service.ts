@@ -24,4 +24,9 @@ export class CatsService {
     if (error) throw error;
     return { data: data ?? [] };
   }
+
+  async removeOne(id: number): Promise<void> {
+    const { error } = await this.supabase.from("cats").delete().eq("id", id);
+    if (error) throw error;
+  }
 }
