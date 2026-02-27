@@ -14,6 +14,17 @@ export class CatService {
       .pipe(map((response) => response.data));
   }
 
+  addOne(payload: {
+    readonly name: string;
+    readonly age: number;
+    readonly breed: string;
+  }): Observable<CatModel> {
+    return this.http.post<CatModel>(
+      `${environment.apiUrl}/api/cats`,
+      payload,
+    );
+  }
+
   removeOne(id: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/cats/${id}`);
   }
