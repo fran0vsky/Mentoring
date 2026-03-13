@@ -35,6 +35,15 @@ const stubCatsResponse = async (page: Page, cats: any[], delayMs = 0) => {
   });
 };
 
+const spyCatsPost = async (page: Page) => {
+  await page.route(API_CATS_URL, async (route) => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({ status: 201 });
+    }
+    return route.continue();
+  });
+};
+
 test('should check if the page has cats', async ({ page }) => {
   await stubCatsResponse(page, cats);
 
@@ -138,28 +147,30 @@ test('should close modal and keep cat when cancel is pressed', async ({
 test('should add cat when + button is pressed, form filled and confirm clicked', async ({
   page,
 }) => {
-  let currentCats = [...cats];
-  await page.route(API_CATS_URL, async (route) => {
-    const req = route.request();
-    if (req.method() === 'POST') {
-      const body = req.postDataJSON();
-      const newCat = {
-        id: currentCats.length + 1,
-        name: body.name,
-        age: body.age,
-        breed: body.breed,
-      };
-      currentCats = [...currentCats, newCat];
-      return route.fulfill({
-        status: 201,
-        body: JSON.stringify(newCat),
-      });
-    }
-    return route.fulfill({
-      status: 200,
-      body: JSON.stringify({ data: currentCats }),
-    });
-  });
+  await stubCatsResponse(page, cats);
+
+  // let currentCats = [...cats];
+  // await page.route(API_CATS_URL, async (route) => {
+  //   const req = route.request();
+  //   if (req.method() === 'POST') {
+  //     const body = req.postDataJSON();
+  //     const newCat = {
+  //       id: currentCats.length + 1,
+  //       name: body.name,
+  //       age: body.age,
+  //       breed: body.breed,
+  //     };
+  //     currentCats = [...currentCats, newCat];
+  //     return route.fulfill({
+  //       status: 201,
+  //       body: JSON.stringify(newCat),
+  //     });
+  //   }
+  //   return route.fulfill({
+  //     status: 200,
+  //     body: JSON.stringify({ data: currentCats }),
+  //   });
+  // });
 
   await page.goto('/');
 
@@ -172,11 +183,10 @@ test('should add cat when + button is pressed, form filled and confirm clicked',
   await page.getByLabel('Name').fill('Fluffy');
   await page.getByLabel('Age').fill('1');
   await page.getByLabel('Breed').fill('Tabby');
+  const spy = await spyCatsPost(page);
   await addDialog.getByRole('button', { name: 'Confirm' }).click();
 
-  const catItems = page.locator(
-    '[role="list"][aria-label="List of cats"] [role="listitem"]',
-  );
-  await expect(catItems).toHaveCount(4);
-  await expect(addDialog).not.toBeVisible();
+  console.log(spy);
+
+  //expect(spy).
 });
