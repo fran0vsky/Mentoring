@@ -26,7 +26,10 @@
   @if (cats() && cats()!.length > 0 ? cats() : null; as catsData) {
   <section class="card rounded border bg-white shadow-sm card-max" aria-labelledby="cats-list-heading">
     <div class="card-body p-4">
-      <h2 id="cats-list-heading" class="card-title mb-3 text-dark h5">Cats List</h2>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 id="cats-list-heading" class="card-title mb-0 text-dark h5">Cats List</h2>
+        <button type="button" class="btn btn-primary btn-sm" aria-label="Add cat" (click)="openAddModal()">+</button>
+      </div>
       <ul class="list-group list-group-flush" role="list" aria-label="List of cats">
         @for (cat of catsData; track cat.id) {
         <li class="list-group-item d-flex justify-content-between align-items-center px-0" role="listitem">
@@ -47,6 +50,39 @@
       </ul>
     </div>
   </section>
+  }
+
+  @if (showAddModal()) {
+  <div class="modal d-block bg-dark bg-opacity-50" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="add-cat-modal-title">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="add-cat-modal-title" class="modal-title">Add cat</h5>
+        </div>
+        <form [formGroup]="addForm" (ngSubmit)="confirmAdd()">
+          <div class="modal-body">
+            <div class="mb-2">
+              <label [attr.for]="'add-cat-name'" class="form-label">Name</label>
+              <input type="text" id="add-cat-name" class="form-control" formControlName="name" />
+            </div>
+            <div class="mb-2">
+              <label [attr.for]="'add-cat-age'" class="form-label">Age</label>
+              <input type="number" id="add-cat-age" class="form-control" formControlName="age" min="0" />
+            </div>
+            <div class="mb-2">
+              <label [attr.for]="'add-cat-breed'" class="form-label">Breed</label>
+              <input type="text" id="add-cat-breed" class="form-control" formControlName="breed" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
   }
 
   @if (catToRemove(); as cat) {

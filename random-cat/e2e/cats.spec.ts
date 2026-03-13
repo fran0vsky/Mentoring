@@ -35,6 +35,15 @@ const stubCatsResponse = async (page: Page, cats: any[], delayMs = 0) => {
   });
 };
 
+const spyCatsPost = async (page: Page) => {
+  await page.route(API_CATS_URL, async (route) => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({ status: 201 });
+    }
+    return route.continue();
+  });
+};
+
 test('should check if the page has cats', async ({ page }) => {
   await stubCatsResponse(page, cats);
 
@@ -133,4 +142,51 @@ test('should close modal and keep cat when cancel is pressed', async ({
 
   await expect(modal).not.toBeVisible();
   await expect(catItems).toHaveCount(3);
+});
+
+test('should add cat when + button is pressed, form filled and confirm clicked', async ({
+  page,
+}) => {
+  await stubCatsResponse(page, cats);
+
+  // let currentCats = [...cats];
+  // await page.route(API_CATS_URL, async (route) => {
+  //   const req = route.request();
+  //   if (req.method() === 'POST') {
+  //     const body = req.postDataJSON();
+  //     const newCat = {
+  //       id: currentCats.length + 1,
+  //       name: body.name,
+  //       age: body.age,
+  //       breed: body.breed,
+  //     };
+  //     currentCats = [...currentCats, newCat];
+  //     return route.fulfill({
+  //       status: 201,
+  //       body: JSON.stringify(newCat),
+  //     });
+  //   }
+  //   return route.fulfill({
+  //     status: 200,
+  //     body: JSON.stringify({ data: currentCats }),
+  //   });
+  // });
+
+  await page.goto('/');
+
+  const addButton = page.getByRole('button', { name: 'Add cat' });
+  await expect(addButton).toBeVisible();
+  await addButton.click();
+
+  const addDialog = page.getByRole('dialog', { name: 'Add cat' });
+  await expect(addDialog).toBeVisible();
+  await page.getByLabel('Name').fill('Fluffy');
+  await page.getByLabel('Age').fill('1');
+  await page.getByLabel('Breed').fill('Tabby');
+  const spy = await spyCatsPost(page);
+  await addDialog.getByRole('button', { name: 'Confirm' }).click();
+
+  console.log(spy);
+
+  //expect(spy).
 });

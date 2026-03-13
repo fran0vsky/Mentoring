@@ -25,6 +25,20 @@ export class CatsService {
     return { data: data ?? [] };
   }
 
+  async addOne(payload: {
+    name: string;
+    age: number;
+    breed: string;
+  }): Promise<CatRow> {
+    const { data, error } = await this.supabase
+      .from("cats")
+      .insert(payload)
+      .select("id, name, age, breed")
+      .single();
+    if (error) throw error;
+    return data as CatRow;
+  }
+
   async removeOne(id: number): Promise<void> {
     const { error } = await this.supabase.from("cats").delete().eq("id", id);
     if (error) throw error;

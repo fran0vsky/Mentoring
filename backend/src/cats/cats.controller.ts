@@ -1,10 +1,13 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   ParseIntPipe,
+  Post,
 } from "@nestjs/common";
+import { CreateCatDto } from "./create-cat.dto";
 import { CatsService } from "./cats.service";
 
 @Controller("api/cats")
@@ -14,6 +17,11 @@ export class CatsController {
   @Get()
   getAll() {
     return this.catsService.getAll();
+  }
+
+  @Post()
+  create(@Body() dto: CreateCatDto) {
+    return this.catsService.addOne(dto);
   }
 
   @Get("random")
